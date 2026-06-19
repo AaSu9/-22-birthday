@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>A Date With Me 💕</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Quicksand:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --cream: #FBF3E7;
+      --cream-deep: #F3E5D0;
+      --rose: #D98C95;
+      --rose-soft: #F0BFC2;
+      --maroon: #7A2E3B;
+      --plum: #3B2233;
+      --gold: #C9963F;
+      --gold-light: #E8C886;
+      --paper-shadow: 0 18px 40px -12px rgba(59, 34, 51, 0.35);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at 15% 20%, rgba(217, 140, 149, 0.18), transparent 45%),
+        radial-gradient(circle at 85% 80%, rgba(201, 150, 63, 0.15), transparent 50%),
+        var(--cream);
+      font-family: 'Quicksand', sans-serif;
+      color: var(--plum);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 28px 16px 60px;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* ambient floating petals/hearts */
+    .petal {
+      position: fixed;
+      top: -40px;
+      font-size: 18px;
+      opacity: 0.5;
+      pointer-events: none;
+      animation: fall linear infinite;
+      z-index: 0;
+      color: var(--rose);
+    }
+
+    @keyframes fall {
+      0% {
+        transform: translateY(0) rotate(0deg);
+      }
+
+      100% {
+        transform: translateY(110vh) rotate(360deg);
+      }
+    }
+
+    .stage {
+      width: 100%;
+      max-width: 480px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .eyebrow {
+      text-align: center;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--maroon);
+      opacity: 0.75;
+      margin-bottom: 10px;
+    }
+
+    .headline {
+      font-family: 'Cormorant Garamond', serif;
+      text-align: center;
+      font-size: clamp(30px, 7vw, 42px);
+      font-weight: 700;
+      line-height: 1.1;
+      color: var(--maroon);
+      margin: 0 0 6px;
+    }
+
+    .headline em {
+      font-style: italic;
+      color: var(--rose);
+    }
+
+    .sub {
+      text-align: center;
+      font-size: 14.5px;
+      color: var(--plum);
+      opacity: 0.75;
+      margin-bottom: 26px;
+      line-height: 1.5;
+    }
+
+    /* ===== Ticket ===== */
+    .ticket {
+      position: relative;
+      background: #fffaf2;
+      border-radius: 22px;
+      box-shadow: var(--paper-shadow);
+      overflow: visible;
+      border: 1px solid rgba(122, 46, 59, 0.08);
+    }
+
+    .ticket-top {
+      padding: 30px 28px 22px;
+      position: relative;
+    }
+
+    .ticket-top::before {
+      content: "";
+      position: absolute;
+      inset: 14px;
+      border: 1.5px dashed rgba(122, 46, 59, 0.25);
+      border-radius: 14px;
+      pointer-events: none;
+    }
+
+    .brand-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 18px;
+    }
+
+    .brand {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 700;
+      font-size: 20px;
+      color: var(--maroon);
+    }
+
+    .seat {
+      font-size: 10.5px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--gold);
+      font-weight: 700;
+      border: 1px solid var(--gold-light);
+      padding: 4px 10px;
+      border-radius: 100px;
+    }
+
+    .step-label {
+      font-size: 11px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--rose);
+      font-weight: 700;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .step-label .line {
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, rgba(217, 140, 149, 0.5), transparent);
+    }
+
+    .prompt {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--plum);
+      margin: 0 0 18px;
+      min-height: 30px;
+    }
+
+    /* choice grid */
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .choice-card {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 16px;
+      border-radius: 14px;
+      border: 1.5px solid rgba(122, 46, 59, 0.14);
+      background: linear-gradient(180deg, #fffefb, #fdf6ea);
+      cursor: pointer;
+      transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+      text-align: left;
+      font-family: 'Quicksand', sans-serif;
+    }
+
+    .choice-card:hover {
+      transform: translateY(-2px);
+      border-color: var(--rose);
+      box-shadow: 0 10px 24px -10px rgba(217, 140, 149, 0.55);
+    }
+
+    .choice-card:active {
+      transform: translateY(0) scale(0.99);
+    }
+
+    .choice-icon {
+      width: 42px;
+      height: 42px;
+      flex: 0 0 42px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 30%, var(--rose-soft), var(--rose));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+    }
+
+    .choice-text {
+      flex: 1;
+    }
+
+    .choice-title {
+      font-weight: 700;
+      font-size: 15.5px;
+      color: var(--plum);
+    }
+
+    .choice-desc {
+      font-size: 12px;
+      color: var(--plum);
+      opacity: 0.6;
+      margin-top: 1px;
+    }
+
+    .choice-arrow {
+      color: var(--rose);
+      font-size: 18px;
+      opacity: 0.7;
+    }
+
+    .back-btn {
+      margin-top: 16px;
+      background: none;
+      border: none;
+      color: var(--maroon);
+      opacity: 0.65;
+      font-family: 'Quicksand', sans-serif;
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 0;
+    }
+
+    .back-btn:hover {
+      opacity: 1;
+    }
+
+    /* perforation divider */
+    .perforation {
+      position: relative;
+      height: 0;
+    }
+
+    .perforation .notch {
+      position: absolute;
+      width: 26px;
+      height: 26px;
+      background: var(--cream);
+      border-radius: 50%;
+      top: -13px;
+    }
+
+    .perforation .notch.left {
+      left: -13px;
+    }
+
+    .perforation .notch.right {
+      right: -13px;
+    }
+
+    .perforation .dashes {
+      border-top: 2px dashed rgba(122, 46, 59, 0.22);
+      margin: 0 24px;
+    }
+
+    .ticket-bottom {
+      padding: 18px 28px 26px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+    }
+
+    .barcode {
+      display: flex;
+      gap: 2.5px;
+      align-items: flex-end;
+      height: 30px;
+    }
+
+    .barcode span {
+      width: 2.5px;
+      background: var(--plum);
+      opacity: 0.35;
+    }
+
+    .date-tag {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 700;
+      font-size: 15px;
+      color: var(--maroon);
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    .date-tag small {
+      display: block;
+      font-family: 'Quicksand', sans-serif;
+      font-weight: 600;
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--rose);
+      opacity: 0.9;
+    }
+
+    /* ===== Confirm step ===== */
+    .confirm-summary {
+      background: linear-gradient(180deg, #fff8ee, #fbeede);
+      border: 1.5px solid var(--gold-light);
+      border-radius: 14px;
+      padding: 16px 18px;
+      margin-bottom: 18px;
+    }
+
+    .confirm-summary .row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13.5px;
+      padding: 5px 0;
+    }
+
+    .confirm-summary .row span:first-child {
+      opacity: 0.6;
+      font-weight: 600;
+    }
+
+    .confirm-summary .row span:last-child {
+      font-weight: 700;
+      color: var(--maroon);
+      text-align: right;
+    }
+
+    .seal-btn {
+      width: 100%;
+      border: none;
+      border-radius: 100px;
+      padding: 16px;
+      font-family: 'Quicksand', sans-serif;
+      font-weight: 700;
+      font-size: 15.5px;
+      letter-spacing: 0.02em;
+      color: #fffaf2;
+      background: linear-gradient(180deg, var(--rose), var(--maroon));
+      cursor: pointer;
+      box-shadow: 0 14px 28px -10px rgba(122, 46, 59, 0.5);
+      transition: transform .15s ease, box-shadow .15s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .seal-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 18px 32px -10px rgba(122, 46, 59, 0.6);
+    }
+
+    .seal-btn:active {
+      transform: translateY(0);
+    }
+
+    .footnote {
+      text-align: center;
+      font-size: 11.5px;
+      color: var(--plum);
+      opacity: 0.45;
+      margin-top: 18px;
+      line-height: 1.5;
+    }
+
+    /* ===== Celebration overlay ===== */
+    .celebrate-overlay {
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(circle at 50% 40%, rgba(217, 140, 149, 0.97), rgba(122, 46, 59, 0.97));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      text-align: center;
+      padding: 30px;
+      z-index: 50;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .5s ease;
+    }
+
+    .celebrate-overlay.show {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .cake-wrap {
+      font-size: 64px;
+      margin-bottom: 18px;
+      animation: popIn .6s cubic-bezier(.34, 1.56, .64, 1) both;
+    }
+
+    @keyframes popIn {
+      0% {
+        transform: scale(0) rotate(-15deg);
+        opacity: 0;
+      }
+
+      100% {
+        transform: scale(1) rotate(0deg);
+        opacity: 1;
+      }
+    }
+
+    .celebrate-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(28px, 7vw, 40px);
+      font-weight: 700;
+      color: #fff;
+      margin: 0 0 10px;
+    }
+
+    .celebrate-sub {
+      font-size: 15px;
+      color: #fff;
+      opacity: 0.9;
+      max-width: 340px;
+      line-height: 1.6;
+      margin-bottom: 28px;
+    }
+
+    .send-btn {
+      background: #fff;
+      color: var(--maroon);
+      border: none;
+      border-radius: 100px;
+      padding: 16px 30px;
+      font-family: 'Quicksand', sans-serif;
+      font-weight: 700;
+      font-size: 15px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 14px 30px -8px rgba(0, 0, 0, 0.35);
+      transition: transform .15s ease;
+    }
+
+    .send-btn:hover {
+      transform: translateY(-2px) scale(1.02);
+    }
+
+    .confetti {
+      position: absolute;
+      top: -10px;
+      border-radius: 2px;
+      animation: confettiFall linear forwards;
+    }
+
+    @keyframes confettiFall {
+      0% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 1;
+      }
+
+      100% {
+        transform: translateY(100vh) rotate(720deg);
+        opacity: 0;
+      }
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+
+      .petal,
+      .confetti {
+        animation: none !important;
+        display: none !important;
+      }
+
+      .cake-wrap {
+        animation: none !important;
+      }
+    }
+
+    /* focus visibility */
+    .choice-card:focus-visible,
+    .seal-btn:focus-visible,
+    .send-btn:focus-visible,
+    .back-btn:focus-visible {
+      outline: 2.5px solid var(--maroon);
+      outline-offset: 3px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="stage">
+    <div class="eyebrow">A little something for you</div>
+    <h1 class="headline">Happy Birthday,<br><em>Chimsuu</em> 💕</h1>
+    <p class="sub">One ticket. Three doors. You choose where this birthday date takes us — I'll be there waiting either
+      way.</p>
+
+    <div class="ticket">
+      <div class="ticket-top">
+
+        <div class="brand-row">
+          <div class="brand">A Date With Me</div>
+          <div class="seat">Admit One</div>
+        </div>
+
+        <!-- STEP 1: main choices -->
+        <div id="step-main">
+          <div class="step-label"><span>Step 1 · Pick your adventure</span><span class="line"></span></div>
+          <p class="prompt">What sounds like you today?</p>
+          <div class="choices">
+            <button class="choice-card" onclick="selectMain('Coffee', null)">
+              <div class="choice-icon">☕</div>
+              <div class="choice-text">
+                <div class="choice-title">Coffee</div>
+                <div class="choice-desc">Slow chats, warm cups, just us</div>
+              </div>
+              <div class="choice-arrow">›</div>
+            </button>
+
+            <button class="choice-card" onclick="goSub('movie')">
+              <div class="choice-icon">🎬</div>
+              <div class="choice-text">
+                <div class="choice-title">Movie</div>
+                <div class="choice-desc">Hindi or Nepali — your call</div>
+              </div>
+              <div class="choice-arrow">›</div>
+            </button>
+
+            <button class="choice-card" onclick="goSub('picnic')">
+              <div class="choice-icon">🧺</div>
+              <div class="choice-text">
+                <div class="choice-title">Dry Picnic</div>
+                <div class="choice-desc">Nuwakot, Nagarjun, or Ranijhula–Nagarkot</div>
+              </div>
+              <div class="choice-arrow">›</div>
+            </button>
+          </div>
+        </div>
+
+        <!-- STEP 2a: movie sub-choice -->
+        <div id="step-movie" class="hidden">
+          <div class="step-label"><span>Step 2 · Movie language</span><span class="line"></span></div>
+          <p class="prompt">Hindi or Nepali?</p>
+          <div class="choices">
+            <button class="choice-card" onclick="selectMain('Movie', 'Hindi')">
+              <div class="choice-icon">🎥</div>
+              <div class="choice-text">
+                <div class="choice-title">Hindi</div>
+                <div class="choice-desc">Bollywood night</div>
+              </div>
+              <div class="choice-arrow">›</div>
+            </button>
+            <button class="choice-card" onclick="selectMain('Movie', 'Nepali')">
+              <div class="choice-icon">🎞️</div>
+              <div class="choice-text">
+                <div class="choice-title">Nepali</div>
+                <div class="choice-desc">A local favourite</div>
+              </div>
+              <div class="choice-arrow">›</div>
+            </button>
+          </div>
+          <button class="back-btn" onclick="goMain()">‹ Back to all options</button>
+        </div>
+
+        <!-- STEP 2b: picnic sub-choice -->
+        <div id="step-picnic" class="hidden">
+          <div class="step-label"><span>Step 2 · Pick the spot</span><span class="line"></span></div>
+          <p class="prompt">Where to for our dry picnic?</p>
+          <div class="choices">
+            <button class="choice-card" onclick="selectMain('Dry Picnic', 'Nuwakot')">
+              <div class="choice-icon">🏞️</div>
+              <div class="choice-text">
+                <div class="choice-title">Nuwakot</div>
+                <div class="choice-desc">Hilltop views &amp; history</div>
+              </div>
+              <div class="choice-arrow">›</div>
+            </button>
+            <button class="choice-card" onclick="selectMain('Dry Picnic', 'Nagarjun')">
+              <div class="choice-icon">🌲</div>
+              <div class="choice-text">
+                <div class="choice-title">Nalagadi</div>
+                <div class="choice-desc">Forest air, easy walk</div>
+              </div>
+              <div class="choice-arrow">›</div>
+            </button>
+            <button class="choice-card" onclick="selectMain('Dry Picnic', 'Ranijhula – Nagarkot')">
+              <div class="choice-icon">⛰️</div>
+              <div class="choice-text">
+                <div class="choice-title">Ranijhula – Nagarkot</div>
+                <div class="choice-desc">Sunset over the hills</div>
+              </div>
+              <div class="choice-arrow">›</div>
+            </button>
+          </div>
+          <button class="back-btn" onclick="goMain()">‹ Back to all options</button>
+        </div>
+
+        <!-- STEP 3: confirm -->
+        <div id="step-confirm" class="hidden">
+          <div class="step-label"><span>Step 3 · Confirm your date</span><span class="line"></span></div>
+          <p class="prompt">Lock it in?</p>
+
+          <div class="confirm-summary">
+            <div class="row"><span>Date Plan</span><span id="confirm-main">—</span></div>
+            <div class="row" id="confirm-sub-row"><span>Detail</span><span id="confirm-sub">—</span></div>
+            <div class="row"><span>For</span><span>Chimsuu 💕</span></div>
+          </div>
+
+          <button class="seal-btn" onclick="celebrate()">Seal it with a 💋 &nbsp;Confirm my choice</button>
+          <button class="back-btn" onclick="goMain()" style="margin-top:10px;">‹ Change my mind</button>
+        </div>
+
+      </div>
+
+      <div class="perforation">
+        <div class="notch left"></div>
+        <div class="notch right"></div>
+        <div class="dashes"></div>
+      </div>
+
+      <div class="ticket-bottom">
+        <div class="barcode" id="barcode"></div>
+        <div class="date-tag"><small>Valid for</small>06 · 07 · 2026</div>
+      </div>
+    </div>
+
+    <p class="footnote">Tap a choice to continue. You can change your mind anytime before confirming.</p>
+  </div>
+
+  <!-- Celebration overlay -->
+  <div class="celebrate-overlay" id="overlay">
+    <div class="cake-wrap">🎂</div>
+    <h2 class="celebrate-title">It's official!</h2>
+    <p class="celebrate-sub" id="overlay-text">Your date is booked. Tap below to send your choice to me on WhatsApp so I
+      can start planning.</p>
+    <button class="send-btn" id="send-btn">📲 Send my choice on WhatsApp</button>
+  </div>
+
+  <script>
+    // ---- floating ambient petals ----
+    const petalEmojis = ['🌸', '💕', '✨'];
+    const petalLayer = document.createElement('div');
+    for (let i = 0; i < 14; i++) {
+      const p = document.createElement('div');
+      p.className = 'petal';
+      p.textContent = petalEmojis[i % petalEmojis.length];
+      p.style.left = (Math.random() * 100) + 'vw';
+      p.style.animationDuration = (9 + Math.random() * 8) + 's';
+      p.style.animationDelay = (Math.random() * 10) + 's';
+      p.style.fontSize = (14 + Math.random() * 10) + 'px';
+      document.body.appendChild(p);
+    }
+
+    // ---- barcode decoration ----
+    const barcode = document.getElementById('barcode');
+    for (let i = 0; i < 28; i++) {
+      const bar = document.createElement('span');
+      bar.style.height = (10 + Math.random() * 20) + 'px';
+      barcode.appendChild(bar);
+    }
+
+    // ---- state machine ----
+    let choice = { main: null, sub: null };
+
+    // ---- background music ----
+    let musicPlayed = false;
+    // Background music URL - you can replace this with any other audio URL
+    const bgMusic = new Audio('https://cdn.pixabay.com/audio/2022/10/25/audio_24a273b5df.mp3');
+    bgMusic.loop = true;
+
+    document.body.addEventListener('click', () => {
+      if (!musicPlayed) {
+        bgMusic.play().catch(e => console.log('Autoplay blocked by browser:', e));
+        musicPlayed = true;
+      }
+    });
+
+    const steps = {
+      main: document.getElementById('step-main'),
+      movie: document.getElementById('step-movie'),
+      picnic: document.getElementById('step-picnic'),
+      confirm: document.getElementById('step-confirm'),
+    };
+
+    function hideAll() {
+      Object.values(steps).forEach(el => el.classList.add('hidden'));
+    }
+
+    function goMain() {
+      hideAll();
+      steps.main.classList.remove('hidden');
+    }
+
+    function goSub(which) {
+      hideAll();
+      steps[which].classList.remove('hidden');
+    }
+
+    function selectMain(main, sub) {
+      choice.main = main;
+      choice.sub = sub;
+      document.getElementById('confirm-main').textContent = main;
+      const subRow = document.getElementById('confirm-sub-row');
+      if (sub) {
+        subRow.style.display = 'flex';
+        document.getElementById('confirm-sub').textContent = sub;
+      } else {
+        subRow.style.display = 'none';
+      }
+      hideAll();
+      steps.confirm.classList.remove('hidden');
+    }
+
+    // ---- confetti burst ----
+    function burstConfetti() {
+      const colors = ['#D98C95', '#C9963F', '#7A2E3B', '#FBF3E7', '#F0BFC2'];
+      for (let i = 0; i < 60; i++) {
+        const c = document.createElement('div');
+        c.className = 'confetti';
+        c.style.left = (Math.random() * 100) + 'vw';
+        c.style.width = (6 + Math.random() * 6) + 'px';
+        c.style.height = (10 + Math.random() * 10) + 'px';
+        c.style.background = colors[Math.floor(Math.random() * colors.length)];
+        c.style.animationDuration = (2.2 + Math.random() * 1.8) + 's';
+        c.style.animationDelay = (Math.random() * 0.6) + 's';
+        document.body.appendChild(c);
+        setTimeout(() => c.remove(), 4500);
+      }
+    }
+
+    function celebrate() {
+      burstConfetti();
+      const overlay = document.getElementById('overlay');
+      const subLabel = choice.sub ? ` (${choice.sub})` : '';
+      document.getElementById('overlay-text').textContent =
+        `Your date is booked: ${choice.main}${subLabel}. Redirecting to WhatsApp to send the message... 💕`;
+      overlay.classList.add('show');
+
+      // Hide the manual send button since we'll redirect automatically
+      document.getElementById('send-btn').style.display = 'none';
+
+      // Automatically send message after a brief 2-second delay to show confetti
+      setTimeout(() => {
+        const phone = '9779741690374'; // Nepal country code + number
+        const message = `Happy Birthday to me 🎂💕 I chose my birthday date: *${choice.main}${subLabel}*! Can't wait, see you soon ❤️ — Chimsuu`;
+        const url = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+
+        // Use window.location.href instead of window.open to avoid popup blockers in setTimeout
+        window.location.href = url;
+      }, 2000);
+    }
+  </script>
+
+</body>
+
+</html>
